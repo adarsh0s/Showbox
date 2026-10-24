@@ -2,13 +2,10 @@ name = "showbox"
 main = "src/index.js"
 compatibility_date = "2024-09-23"
 
-[vars]
-# Comma-separated list of allowed origin hostnames for the /proxy endpoint.
-# Leave empty to allow any origin — stream URLs come from shegu CDN domains which
-# are not known in advance, so an open proxy is intentional here.
-ALLOWED_ORIGINS = ""
+# Set TMDB_API_KEY as a Cloudflare Worker secret; do not commit API keys.
+# Dashboard: Workers & Pages > showbox > Settings > Variables and Secrets.
+# CLI: npx wrangler secret put TMDB_API_KEY
 
-# Optional: override the default TMDB API key used for IMDb→TMDB conversion.
-# Set this as a Cloudflare Worker secret instead of a plain var for better security:
-#   npx wrangler secret put TMDB_API_KEY
-# TMDB_API_KEY = ""
+# Optional proxy allow-list. If omitted, the /proxy route stays disabled.
+# If you enable proxy playback, set ALLOWED_ORIGINS to a comma-separated list
+# of approved HTTPS CDN hostnames. Never use an empty allow-list to mean allow-all.

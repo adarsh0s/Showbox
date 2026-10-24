@@ -1,11 +1,12 @@
 {
-  "name": "Showbox",
-  "version": "2.4.0",
-  "description": "Stremio Addon that fetches streams from Febbox",
+  "name": "showbox",
+  "version": "2.6.0",
+  "description": "Cloudflare Worker Stremio add-on for FebBox streams",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "wrangler dev",
-    "deploy": "wrangler deploy"
+    "deploy": "wrangler deploy",
+    "check": "node --check src/index.js && node --check src/ui.js && node --check src/febbox.js && node --check src/FebBoxApi.js && node --check src/ShowboxAPI.js && node --check src/addon.js && node --check src/proxy.js"
   },
   "dependencies": {
     "crypto-js": "^4.2.0",

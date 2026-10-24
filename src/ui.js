@@ -1,478 +1,342 @@
-export const CONFIG_HTML = `<!DOCTYPE html>
+export const CONFIG_HTML = `<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Showbox Config</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-page: #fafafa;
-            --bg-surface: #ffffff;
-            --bg-input: #f4f4f5;
-            --text-main: #09090b;
-            --text-muted: #71717a;
-            --accent: #2563eb;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --border: #e4e4e7;
-            --radius-lg: 16px;
-            --radius-sm: 8px;
-            --shadow: 0 4px 24px -6px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(0,0,0,0.02);
-            --transition: all 0.2s ease;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
-
-        body {
-            font-family: 'Inter', sans-serif; background-color: var(--bg-page); color: var(--text-main);
-            line-height: 1.5; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px;
-        }
-
-        .container { width: 100%; max-width: 600px; }
-
-        .header { display: flex; align-items: center; justify-content: center; margin-bottom: 24px; }
-        .logo { font-weight: 600; font-size: 1.25rem; display: flex; align-items: center; gap: 10px; }
-        .logo-icon { width: 18px; height: 18px; background: var(--text-main); border-radius: 4px; }
-
-        .app-window { background: var(--bg-surface); border-radius: var(--radius-lg); box-shadow: var(--shadow); padding: 32px; }
-
-        .section { padding-bottom: 24px; margin-bottom: 24px; border-bottom: 1px solid var(--border); }
-        .section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-
-        .form-group { margin-bottom: 16px; }
-        .form-group:last-child { margin-bottom: 0; }
-        
-        .label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        label { font-size: 0.875rem; font-weight: 500; color: var(--text-main); }
-        .tag-beta { font-size: 0.65rem; background: #dbeafe; color: var(--accent); padding: 2px 6px; border-radius: 4px; font-weight: 600; text-transform: uppercase; margin-left: 8px; }
-
-        .flex-row { display: flex; gap: 12px; }
-        
-        input[type="text"], select {
-            width: 100%; background: var(--bg-input); border: 1px solid transparent; padding: 10px 14px;
-            border-radius: var(--radius-sm); font-family: inherit; font-size: 0.9rem; color: var(--text-main);
-            outline: none; transition: var(--transition);
-        }
-        input:focus, select:focus { background: var(--bg-surface); border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
-
-        .btn {
-            display: inline-flex; align-items: center; justify-content: center; padding: 10px 16px;
-            border-radius: var(--radius-sm); font-weight: 500; font-size: 0.875rem; cursor: pointer;
-            transition: var(--transition); border: none; white-space: nowrap; font-family: inherit;
-        }
-        .btn-primary { background: var(--text-main); color: white; }
-        .btn-primary:hover { background: #27272a; }
-        .btn-secondary { background: var(--bg-input); color: var(--text-main); }
-        .btn-secondary:hover { background: #e4e4e7; }
-        .btn-text { background: transparent; color: var(--accent); padding: 0; font-size: 0.8rem; text-decoration: none; }
-        .btn-text:hover { text-decoration: underline; }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .btn-large { width: 100%; font-size: 1rem; padding: 14px; font-weight: 600; text-decoration: none; text-align: center; }
-
-        .input-wrap { position: relative; flex: 1; display: flex; align-items: center; }
-        .status-indicator { position: absolute; left: 12px; width: 8px; height: 8px; border-radius: 50%; background: var(--border); transition: var(--transition); }
-        .status-valid { background: var(--success); box-shadow: 0 0 8px rgba(16, 185, 129, 0.4); }
-        .status-invalid { background: var(--danger); box-shadow: 0 0 8px rgba(239, 68, 68, 0.4); }
-        .status-override { background: var(--warning); box-shadow: 0 0 8px rgba(245, 158, 11, 0.4); }
-        .status-pending { background: var(--accent); animation: pulse 1s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-
-        .quota-bar-wrap { margin-top: 12px; padding: 10px 12px; background: var(--bg-input); border-radius: var(--radius-sm); font-size: 0.8rem; color: var(--text-muted); display: none; }
-        .quota-bar-wrap.visible { display: flex; flex-direction: column; gap: 8px; }
-        .quota-bar-track { width: 100%; height: 4px; background: #d4d4d8; border-radius: 10px; overflow: hidden; }
-        .quota-bar-fill { height: 100%; background: var(--text-main); transition: width 0.4s; }
-        .quota-bar-fill.low { background: var(--warning); }
-        .quota-bar-fill.empty { background: var(--danger); }
-
-        .cookie-card { background: var(--bg-input); border-radius: var(--radius-sm); padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
-        .cookie-info { display: flex; flex-direction: column; gap: 2px; }
-        .cookie-title { display: flex; align-items: center; gap: 8px; font-weight: 500; font-size: 0.85rem; }
-        .cookie-hash { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-muted); }
-        .btn-sm-danger { background: transparent; color: var(--danger); border: none; font-size: 0.8rem; cursor: pointer; }
-
-        .toggle { position: relative; display: inline-block; width: 36px; height: 20px; }
-        .toggle input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #d4d4d8; transition: .3s; border-radius: 20px; }
-        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 2px; bottom: 2px; background-color: white; transition: .3s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        input:checked + .slider { background-color: var(--accent); }
-        input:checked + .slider:before { transform: translateX(16px); }
-
-        .expandable { max-height: 0; overflow: hidden; transition: max-height 0.3s ease, opacity 0.2s ease; opacity: 0; }
-        .expandable.open { max-height: 300px; opacity: 1; margin-top: 12px; }
-
-        .manifest-box { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-muted); text-align: center; margin-top: 16px; word-break: break-all; cursor: pointer; background: var(--bg-input); padding: 12px; border-radius: var(--radius-sm); }
-        .manifest-box:hover { color: var(--text-main); }
-
-        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: var(--transition); z-index: 50; padding: 20px; }
-        .modal-overlay.active { opacity: 1; pointer-events: all; }
-        .modal { background: var(--bg-surface); width: 100%; max-width: 500px; border-radius: 12px; box-shadow: var(--shadow); transform: translateY(20px); transition: var(--transition); }
-        .modal-overlay.active .modal { transform: translateY(0); }
-        .modal-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-weight: 500; font-size: 1rem; }
-        .modal-close { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.2rem; }
-        .modal-body { padding: 20px; font-size: 0.875rem; color: var(--text-muted); }
-        pre { background: #18181b; padding: 12px; border-radius: 6px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #a78bfa; margin: 12px 0; }
-
-        .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: #18181b; color: white; padding: 10px 20px; border-radius: 30px; font-weight: 500; font-size: 0.85rem; opacity: 0; pointer-events: none; transition: var(--transition); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); z-index: 100; }
-        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-        @media (max-width: 600px) {
-            .app-window { padding: 20px; }
-            .flex-row { flex-direction: column; }
-            .btn { width: 100%; }
-        }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0b12">
+<title>ShowBox · Add-on setup</title>
+<style>
+:root{color-scheme:dark;--bg:#090a10;--panel:#11131d;--panel2:#171a27;--line:#292d40;--text:#f4f5fb;--muted:#9da3bb;--accent:#a78bfa;--accent2:#7c5cff;--good:#4ade80;--warn:#fbbf24;--bad:#fb7185;--radius:22px}
+*{box-sizing:border-box}html{min-height:100%;background:var(--bg)}body{margin:0;background:radial-gradient(ellipse at 15% -10%,rgba(124,92,255,.22),transparent 42%),radial-gradient(ellipse at 95% 10%,rgba(45,212,191,.09),transparent 35%),var(--bg);color:var(--text);font:15px/1.55 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit}button,a,select,input{outline-color:var(--accent)}button{cursor:pointer}a{color:var(--accent)}
+.shell{width:min(100% - 32px,980px);margin:0 auto;padding:34px 0 52px}.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:34px}.brand{display:flex;align-items:center;gap:13px;font-weight:750;letter-spacing:-.035em;font-size:1.12rem}.brandmark{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(145deg,#b9a4ff,#7653ff);color:#100b22;box-shadow:0 8px 28px #7c5cff40}.brandmark svg{width:23px;height:23px}.pill{border:1px solid #34364b;border-radius:999px;padding:6px 11px;color:#c3c7d8;font-size:.76rem;display:flex;align-items:center;gap:7px;background:#11131dbb}.pulse{width:7px;height:7px;border-radius:50%;background:var(--good);box-shadow:0 0 12px #4ade8070}
+.hero{margin-bottom:25px}.eyebrow{color:#b9a7ff;text-transform:uppercase;letter-spacing:.15em;font-size:.72rem;font-weight:800}.hero h1{font-size:clamp(2.1rem,5.8vw,3.65rem);line-height:1.04;letter-spacing:-.065em;margin:10px 0 13px;font-weight:800}.hero h1 span{background:linear-gradient(90deg,#c4b5fd,#7dd3fc);background-clip:text;-webkit-background-clip:text;color:transparent}.hero p{margin:0;color:var(--muted);max-width:620px;font-size:1rem}
+.layout{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(270px,.8fr);gap:18px;align-items:start}.stack{display:grid;gap:18px}.card{background:linear-gradient(150deg,#151725f5,#10121bf5);border:1px solid var(--line);border-radius:var(--radius);padding:24px;box-shadow:0 18px 55px #00000018}.cardhead{display:flex;gap:13px;align-items:flex-start;margin-bottom:20px}.step{width:36px;height:36px;flex:none;border-radius:12px;display:grid;place-items:center;background:#28203e;color:#cbbcff;font-weight:800}.card h2{font-size:1.04rem;letter-spacing:-.025em;margin:0 0 4px}.sub{color:var(--muted);font-size:.84rem;margin:0}.field{margin-top:17px}.labelrow{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:8px}label{font-size:.84rem;font-weight:650;color:#e6e7f1}.hint{font-size:.76rem;color:var(--muted)}.inputrow{display:flex;gap:9px}.inputwrap{position:relative;flex:1;min-width:0}.inputwrap input{width:100%;padding:13px 14px 13px 39px}.dot{position:absolute;left:15px;top:50%;transform:translateY(-50%);width:8px;height:8px;border-radius:50%;background:#5c6177}.status-valid{background:var(--good);box-shadow:0 0 10px #4ade8060}.status-invalid{background:var(--bad)}.status-pending{background:var(--accent);animation:pulse 1s infinite}@keyframes pulse{50%{opacity:.35}}
+input[type=text],input[type=password],select{width:100%;border:1px solid #30344a;background:#0d0f18;color:var(--text);border-radius:12px;padding:12px 13px;min-width:0;transition:border-color .18s,box-shadow .18s}input::placeholder{color:#70768f}input:focus,select:focus{border-color:#9278ff;box-shadow:0 0 0 3px #9278ff20}.btn{border:1px solid #353950;border-radius:12px;padding:11px 15px;background:#202337;color:#f1f0ff;font-weight:700;font-size:.84rem;transition:transform .15s,border-color .15s,background .15s;white-space:nowrap}.btn:hover{border-color:#7761c7;background:#282842}.btn:active{transform:scale(.98)}.btn:disabled{opacity:.42;cursor:not-allowed}.btn-primary{background:linear-gradient(135deg,#b6a0ff,#8b6bff);border-color:transparent;color:#140d2c;box-shadow:0 7px 22px #805bff25}.btn-primary:hover{background:linear-gradient(135deg,#c4b4ff,#a18aff)}.btn-ghost{background:transparent}.btn-danger{background:transparent;border-color:transparent;color:var(--bad);padding:6px 9px}.btn-full{width:100%;padding:14px 17px;font-size:.94rem}.btnrow{display:flex;gap:9px;margin-top:10px}.btnrow>*{flex:1}.quota{display:none;margin-top:15px;padding:14px;border:1px solid #2d3346;background:#0c1019;border-radius:14px}.quota.visible{display:block}.quota-top{display:flex;justify-content:space-between;gap:10px;font-size:.8rem;color:#dfe2f1}.bar{height:6px;border-radius:99px;background:#292d40;margin-top:10px;overflow:hidden}.barfill{height:100%;width:0;background:linear-gradient(90deg,#7c5cff,#5eead4);border-radius:99px;transition:width .3s}.barfill.low{background:var(--warn)}.barfill.empty{background:var(--bad)}
+.divider{height:1px;background:var(--line);margin:22px 0}.badge{font-size:.66rem;letter-spacing:.07em;text-transform:uppercase;border-radius:6px;padding:3px 6px;background:#2a2342;color:#c8b9ff;font-weight:800}.cookie-list{display:grid;gap:8px;margin-top:12px}.cookie-card{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px;border-radius:13px;background:#0d1019;border:1px solid #292d40}.cookie-title{font-size:.83rem;font-weight:700;display:flex;align-items:center;gap:8px}.cookie-hash{font: .72rem ui-monospace,SFMono-Regular,monospace;color:#8990aa}.cookie-sub{font-size:.75rem;color:var(--muted);margin-top:3px}.cookie-status{width:7px;height:7px;border-radius:50%;background:#5c6177;display:inline-block}.options{display:grid;grid-template-columns:1fr 1fr;gap:13px}.option{background:#0d0f18;border:1px solid #292d40;border-radius:15px;padding:14px}.option label{display:block;margin-bottom:9px}.toggleline{display:flex;justify-content:space-between;align-items:center;gap:14px}.toggle{appearance:none;width:43px;height:25px;border-radius:999px;background:#3a3e54;position:relative;cursor:pointer;transition:background .2s;flex:none}.toggle:before{content:"";position:absolute;width:19px;height:19px;border-radius:50%;left:3px;top:3px;background:white;transition:transform .2s}.toggle:checked{background:#9278ff}.toggle:checked:before{transform:translateX(18px)}.expandable{display:none;margin-top:14px}.expandable.open{display:block}.help-link{font-size:.78rem;text-decoration:none}.install-card{background:linear-gradient(145deg,#201b36,#141521 70%);border-color:#4b3d78}.install-card .step{background:#3a2d64;color:#ddd3ff}.manifest{font: .73rem/1.5 ui-monospace,SFMono-Regular,monospace;color:#aeb4ce;overflow-wrap:anywhere;background:#090b13;border:1px solid #2d3046;border-radius:12px;padding:13px;margin-top:13px;cursor:pointer}.manifest:hover{border-color:#8270ce}.fineprint{color:#7e849e;font-size:.76rem;margin-top:14px}.statusnote{color:var(--muted);font-size:.78rem;margin-top:9px;min-height:1.2em}.toast{position:fixed;z-index:20;bottom:24px;left:50%;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#f5f3ff;color:#19132c;padding:11px 17px;border-radius:12px;font-weight:750;font-size:.84rem;box-shadow:0 12px 35px #0008;transition:all .2s;max-width:calc(100% - 30px)}.toast.show{opacity:1;transform:translate(-50%,0)}.modal-overlay{display:none;position:fixed;inset:0;z-index:30;background:#05060bcc;backdrop-filter:blur(8px);padding:20px;align-items:center;justify-content:center}.modal-overlay.active{display:flex}.modal{width:min(100%,540px);background:#151725;border:1px solid #353950;border-radius:20px;padding:23px}.modalhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.modal h2{margin:0}.modal pre{white-space:pre-wrap;overflow:auto;background:#090b13;padding:14px;border-radius:12px;color:#c5baff;font-size:.75rem}.footer{text-align:center;color:#666d87;font-size:.75rem;margin-top:22px}
+@media(max-width:760px){.shell{width:min(100% - 22px,560px);padding-top:22px}.topbar{margin-bottom:27px}.pill{font-size:.68rem}.layout{grid-template-columns:1fr}.card{padding:19px;border-radius:19px}.hero h1{font-size:2.6rem}.options{gap:9px}.option{padding:12px}}
+@media(max-width:420px){.brand{font-size:.98rem}.brandmark{width:37px;height:37px}.topbar{align-items:flex-start}.inputrow{flex-wrap:wrap}.inputrow .btn{flex:1}.options{grid-template-columns:1fr}.btnrow{flex-wrap:wrap}.btnrow>*{min-width:120px}}
+</style>
 </head>
 <body>
+<main class="shell">
+  <header class="topbar">
+    <div class="brand"><div class="brandmark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M7 4.8a1.5 1.5 0 0 0-2.3 1.3v11.8a1.5 1.5 0 0 0 2.3 1.3l11-5.9a1.5 1.5 0 0 0 0-2.6L7 4.8Z" fill="currentColor"/></svg></div><span>ShowBox <span style="color:#9da3bb;font-weight:500">/ Stremio</span></span></div>
+    <div class="pill"><span class="pulse"></span> Configuration center</div>
+  </header>
+  <section class="hero">
+    <div class="eyebrow">Your streaming setup</div>
+    <h1>Make it <span>yours.</span></h1>
+    <p>Connect your FebBox account, tune playback preferences, and install the ShowBox add-on in Stremio.</p>
+  </section>
 
-    <div class="container">
-        <div class="header">
-            <div class="logo"><div class="logo-icon"></div>Showbox Stremio Addon</div>
+  <div class="layout">
+    <div class="stack">
+      <section class="card">
+        <div class="cardhead"><div class="step">01</div><div><h2>FebBox account</h2><p class="sub">Add your UI cookie to access your account's files.</p></div></div>
+        <div class="field">
+          <div class="labelrow"><label for="manualCookie">Primary UI cookie</label><span class="hint">Kept in this configuration URL</span></div>
+          <div class="inputrow">
+            <div class="inputwrap"><span class="dot" id="mainCookieStatus"></span><input type="password" id="manualCookie" autocomplete="off" spellcheck="false" placeholder="Paste FebBox UI cookie" oninput="resetCookieState()"></div>
+            <button class="btn" type="button" onclick="toggleCookieVisibility()">Show</button>
+            <button class="btn" type="button" onclick="validateMainCookie()">Validate</button>
+          </div>
+          <div class="btnrow"><button class="btn btn-primary" id="setCookieBtn" disabled onclick="setMainCookie()">Use primary cookie</button><button class="btn btn-ghost" id="overrideCookieBtn" onclick="overrideMainCookie()">Force apply</button></div>
+          <div class="quota" id="mainCookieQuota"><div class="quota-top"><span id="quotaLabel">Account quota</span><span id="quotaPct"></span></div><div class="bar"><div class="barfill" id="quotaFill"></div></div></div>
+          <div class="statusnote" id="cookieStatusNote" aria-live="polite">Your cookie is sent to FebBox only when you validate it.</div>
         </div>
+        <div class="divider"></div>
+        <div class="labelrow"><label>Fallback accounts</label><span class="badge">Load balancer</span></div>
+        <p class="sub">Optional. Add extra cookies so ShowBox can prefer an account with more remaining traffic.</p>
+        <div class="field"><div class="inputrow"><input type="password" id="multiCookieInput" autocomplete="off" spellcheck="false" placeholder="Add another UI cookie"><button class="btn" onclick="addMultiCookie()">Add account</button></div></div>
+        <div class="btnrow"><button class="btn" onclick="validateAllCookies()">Validate all</button><button class="btn" onclick="applyMultiCookies()">Use fallback list</button></div>
+        <div class="cookie-list" id="multiCookieList"></div>
+      </section>
 
-        <div class="app-window">
-            
-            <div class="section">
-                <div class="form-group">
-                    <label class="label-row">Main Cookie (ui=)</label>
-                    <div class="flex-row" style="margin-bottom: 12px;">
-                        <div class="input-wrap">
-                            <div class="status-indicator" id="mainCookieStatus"></div>
-                            <input type="text" id="manualCookie" placeholder="Paste token" style="padding-left: 28px;" oninput="resetCookieState()">
-                        </div>
-                        <button class="btn btn-secondary" onclick="validateMainCookie()">Check</button>
-                    </div>
-                    <div class="flex-row">
-                        <button class="btn btn-secondary" id="setCookieBtn" disabled onclick="setMainCookie()">Apply</button>
-                        <button class="btn btn-secondary" id="overrideCookieBtn" onclick="overrideMainCookie()">Force Apply</button>
-                    </div>
-                    
-                    <div class="quota-bar-wrap" id="mainCookieQuota">
-                        <div id="quotaLabel" style="font-family: 'JetBrains Mono', monospace;">⚡ Loading...</div>
-                        <div class="quota-bar-track"><div class="quota-bar-fill" id="quotaFill" style="width:0%"></div></div>
-                    </div>
-                </div>
-
-                <div class="form-group" style="margin-top: 20px;">
-                    <label class="label-row">
-                        <span>Load Balancer <span class="tag-beta">Beta</span></span>
-                    </label>
-                    <div class="flex-row" style="margin-bottom: 12px;">
-                        <input type="text" id="multiCookieInput" placeholder="Fallback token">
-                        <button class="btn btn-secondary" onclick="addMultiCookie()">Add</button>
-                    </div>
-                    <div class="flex-row">
-                        <button class="btn btn-secondary" style="flex:1;" onclick="validateAllCookies()">Validate</button>
-                        <button class="btn btn-secondary" style="flex:1;" onclick="applyMultiCookies()">Apply List</button>
-                    </div>
-                    <div id="multiCookieList"></div>
-                </div>
-            </div>
-
-            <div class="section">
-                <div class="form-group">
-                    <div class="label-row">
-                        <label>Stream Proxy</label>
-                        <label class="toggle">
-                            <input type="checkbox" id="useProxy" class="auto-update" onchange="toggleProxyOptions()">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                    
-                    <div id="proxyOptions" class="expandable">
-                        <div class="form-group">
-                            <label style="display: block; margin-bottom: 8px;">Routing</label>
-                            <select id="proxyType" class="auto-update" onchange="toggleCustomProxy()">
-                                <option value="builtin">Default Worker</option>
-                                <option value="custom">Custom Worker</option>
-                            </select>
-                        </div>
-                        <div class="form-group expandable" id="customProxyWrap">
-                            <div class="label-row" style="margin-bottom: 8px;">
-                                <label>URL</label>
-                                <a href="#" class="btn-text" onclick="openGuide()">Proxy Setup Guide</a>
-                            </div>
-                            <input type="text" id="customProxyUrl" class="auto-update" placeholder="https://...">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px;">
-                    <div>
-                        <label style="display: block; margin-bottom: 8px;">Region</label>
-                        <select id="sbRegion" class="auto-update">
-                            <option value="Auto">Auto</option>
-                            <option value="USA7">USA7</option>
-                            <option value="USA6">USA6</option>
-                            <option value="USA5">USA5</option>
-                            <option value="UK3">UK3</option>
-                            <option value="CA1">CA1</option>
-                            <option value="FR1">FR1</option>
-                            <option value="DE2">DE2</option>
-                            <option value="HK1">HK1</option>
-                            <option value="IN1">IN1</option>
-                            <option value="AU1">AU1</option>
-                            <option value="SZ">SZ</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label style="display: block; margin-bottom: 8px;">Quality</label>
-                        <select id="sbMinQuality" class="auto-update">
-                            <option value="all">Any</option>
-                            <option value="1080p">1080p+</option>
-                            <option value="4K">4K Only</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <div style="display: flex; gap: 12px; margin-top: 16px;">
-                <a href="#" id="installBtn" class="btn btn-primary btn-large" style="flex: 2;">Install Addon</a>
-                <button class="btn btn-secondary btn-large" style="flex: 1;" onclick="copyManifest()">Copy URL</button>
-            </div>
-            
-            <div class="manifest-box" id="manifestUrl" onclick="copyManifest()">Waiting for configuration...</div>
+      <section class="card">
+        <div class="cardhead"><div class="step">02</div><div><h2>Playback preferences</h2><p class="sub">Choose a preferred region, quality threshold, and optional proxy.</p></div></div>
+        <div class="options">
+          <div class="option"><label for="sbRegion">Server region</label><select id="sbRegion" class="auto-update">
+            <option value="Auto">Auto detect</option><option value="USA7">USA · 7</option><option value="USA6">USA · 6</option><option value="USA5">USA · 5</option><option value="UK3">United Kingdom</option><option value="CA1">Canada</option><option value="FR1">France</option><option value="DE2">Germany</option><option value="HK1">Hong Kong</option><option value="IN1">India</option><option value="AU1">Australia</option><option value="SZ">China · SZ</option>
+          </select></div>
+          <div class="option"><label for="sbMinQuality">Minimum quality</label><select id="sbMinQuality" class="auto-update"><option value="all">Any available</option><option value="720p">720p or better</option><option value="1080p">1080p or better</option><option value="4K">4K only</option></select></div>
         </div>
+        <div class="divider"></div>
+        <div class="toggleline"><div><label for="useProxy">Stream proxy</label><p class="sub">Route playback through a Worker to improve client compatibility.</p></div><input type="checkbox" id="useProxy" class="toggle" onchange="toggleProxyOptions()"></div>
+        <div id="proxyOptions" class="expandable">
+          <div class="field"><div class="labelrow"><label for="proxyType">Proxy routing</label><a class="help-link" href="#" onclick="openGuide();return false">Setup guide</a></div><select id="proxyType" class="auto-update" onchange="toggleCustomProxy()"><option value="builtin">This ShowBox Worker</option><option value="custom">Custom Worker</option></select></div>
+          <div class="field expandable" id="customProxyWrap"><label for="customProxyUrl">Custom Worker URL</label><input type="text" id="customProxyUrl" class="auto-update" placeholder="https://your-worker.workers.dev"></div>
+        </div>
+      </section>
     </div>
 
-    <div class="toast" id="toast">Message</div>
+    <aside class="stack">
+      <section class="card install-card">
+        <div class="cardhead"><div class="step">03</div><div><h2>Install in Stremio</h2><p class="sub">Generate a personal manifest URL, then open it in Stremio.</p></div></div>
+        <a href="#" id="installBtn" class="btn btn-primary btn-full">Install ShowBox</a>
+        <button class="btn btn-full" style="margin-top:9px" onclick="copyManifest()">Copy manifest URL</button>
+        <div class="manifest" id="manifestUrl" onclick="copyManifest()" title="Tap to copy">Preparing your manifest…</div>
+        <p class="fineprint">Tap the URL to copy it. Your selected settings and cookie tokens are encoded into this URL.</p>
+      </section>
+      <section class="card">
+        <div class="cardhead"><div class="step">i</div><div><h2>Before you start</h2><p class="sub">A few important details.</p></div></div>
+        <p class="sub">• Validate the primary cookie before applying it.<br>• Keep your manifest URL private because it contains your configured token(s).<br>• If you replace or revoke a FebBox cookie, update the configuration and reinstall the add-on.</p>
+        <div class="divider"></div>
+        <div class="labelrow"><label>Service status</label><span class="badge">Unofficial</span></div>
+        <p class="sub">ShowBox is an unofficial community add-on. Availability depends on upstream ShowBox and FebBox services.</p>
+      </section>
+    </aside>
+  </div>
+  <footer class="footer">ShowBox configuration · Settings are encoded in your personal manifest URL.</footer>
+</main>
 
-    <div class="modal-overlay" id="guideModal" onclick="closeGuide(event)">
-        <div class="modal">
-            <div class="modal-header">
-                Custom Proxy
-                <button class="modal-close" onclick="closeGuide()">&times;</button>
-            </div>
-            <div class="modal-body">
-                <ol style="margin-left: 16px; margin-bottom: 12px;">
-                    <li>Create a Worker on Cloudflare.</li>
-                    <li>Deploy the code below.</li>
-                    <li>Paste the Worker URL.</li>
-                </ol>
-                <pre><code>export default {
+<div class="toast" id="toast" role="status" aria-live="polite">Done</div>
+<div class="modal-overlay" id="guideModal" onclick="closeGuide(event)">
+  <section class="modal" role="dialog" aria-modal="true" aria-labelledby="guideTitle">
+    <div class="modalhead"><h2 id="guideTitle">Custom proxy setup</h2><button class="btn" onclick="closeGuide()">Close</button></div>
+    <p class="sub">Deploy a compatible streaming proxy Worker, then choose “Custom Worker” and paste its URL. Use only a Worker you trust.</p>
+    <pre>export default {
   async fetch(request) {
-    if (request.method === "OPTIONS") return new Response(null, { headers: { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "*" }});
+    if (request.method === "OPTIONS") {
+      return new Response(null, {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Headers": "*"
+        }
+      });
+    }
     const url = new URL(request.url).searchParams.get("url");
     if (!url) return new Response("Add ?url=", { status: 400 });
-    const req = new Request(url, request);
-    req.headers.set("origin", new URL(url).origin);
-    req.headers.set("referer", new URL(url).origin + "/");
-    const res = await fetch(req);
-    const newRes = new Response(res.body, res);
-    newRes.headers.set("Access-Control-Allow-Origin", "*");
-    return newRes;
+    const target = new URL(url);
+    if (!["http:", "https:"].includes(target.protocol)) {
+      return new Response("Invalid URL", { status: 400 });
+    }
+    const upstream = await fetch(target, request);
+    const response = new Response(upstream.body, upstream);
+    response.headers.set("Access-Control-Allow-Origin", "*");
+    return response;
   }
-}</code></pre>
-            </div>
-        </div>
-    </div>
+};</pre>
+  </section>
+</div>
 
-    <script>
-        let mainCookieFlow = null;
-        let nsMultiCookies = [];
+<script>
+let mainCookieFlow = null;
+let nsMultiCookies = [];
 
-        function shortHash(str) {
-            let h = 5381; for (let i = 0; i < str.length; i++) { h = ((h << 5) + h) + str.charCodeAt(i); h |= 0; }
-            return (h >>> 0).toString(16).padStart(8, '0');
-        }
-
-        function showToast(msg) {
-            const t = document.getElementById('toast');
-            t.innerText = msg; t.classList.add('show');
-            setTimeout(function() { t.classList.remove('show'); }, 3000);
-        }
-
-        function toggleProxyOptions() {
-            const wrap = document.getElementById('proxyOptions');
-            document.getElementById('useProxy').checked ? wrap.classList.add('open') : wrap.classList.remove('open');
-            generateManifest();
-        }
-
-        function toggleCustomProxy() {
-            const wrap = document.getElementById('customProxyWrap');
-            document.getElementById('proxyType').value === 'custom' ? wrap.classList.add('open') : wrap.classList.remove('open');
-            generateManifest();
-        }
-
-        function openGuide() { document.getElementById('guideModal').classList.add('active'); }
-        function closeGuide(e) { if (!e || e.target.classList.contains('modal-overlay') || e.target.classList.contains('modal-close')) document.getElementById('guideModal').classList.remove('active'); }
-
-        function formatMB(val) {
-            if (typeof val !== 'number' || isNaN(val)) return 'N/A';
-            const safe = Math.max(0, val);
-            if (safe >= 1024) return (safe / 1024).toFixed(2) + ' GB';
-            return safe.toFixed(2) + ' MB';
-        }
-
-        function resetCookieState() {
-            document.getElementById('mainCookieStatus').className = 'status-indicator';
-            document.getElementById('setCookieBtn').disabled = true;
-            mainCookieFlow = null;
-            document.getElementById('mainCookieQuota').classList.remove('visible');
-        }
-
-        async function validateSingleCookie(cookieVal) {
-            try {
-                let resp = await fetch('/api/febbox-flow', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cookie: cookieVal }) });
-                let res = await resp.json();
-                if (res && res.ok && res.flow) return { valid: true, flow: res.flow };
-                resp = await fetch('/api/validate-cookie', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cookie: cookieVal }) });
-                res = await resp.json();
-                if (res && res.isValid) return { valid: true, flow: null };
-                return { valid: false };
-            } catch(e) { return { valid: false }; }
-        }
-
-        async function validateMainCookie() {
-            const val = document.getElementById('manualCookie').value.trim();
-            if (!val) return showToast("Enter a token.");
-            const indicator = document.getElementById('mainCookieStatus');
-            indicator.className = 'status-indicator status-pending';
-            document.getElementById('setCookieBtn').disabled = true;
-            mainCookieFlow = null;
-            document.getElementById('mainCookieQuota').classList.remove('visible');
-            const result = await validateSingleCookie(val);
-            if (result.valid) {
-                indicator.className = 'status-indicator status-valid';
-                document.getElementById('setCookieBtn').disabled = false;
-                if (result.flow) { mainCookieFlow = result.flow; showQuota(result.flow); }
-                showToast("Validated.");
-            } else {
-                indicator.className = 'status-indicator status-invalid';
-                showToast("Invalid Token.");
-            }
-        }
-
-        function showQuota(flow) {
-            if (!flow || typeof flow.traffic_limit_mb !== 'number' || typeof flow.traffic_usage_mb !== 'number') return;
-            const limit = flow.traffic_limit_mb;
-            const remaining = Math.max(0, limit - flow.traffic_usage_mb);
-            const wrap  = document.getElementById('mainCookieQuota');
-            const label = document.getElementById('quotaLabel');
-            const fill  = document.getElementById('quotaFill');
-            if (limit <= 0) {
-                label.textContent = "⚡ " + formatMB(remaining) + " (No Limit)";
-                fill.style.width = '100%'; fill.className = 'quota-bar-fill';
-            } else {
-                const pct = Math.round((remaining / limit) * 100);
-                label.textContent = "⚡ " + formatMB(remaining) + " / " + formatMB(limit);
-                fill.style.width = pct + '%';
-                fill.className = 'quota-bar-fill' + (pct <= 10 ? ' empty' : pct <= 30 ? ' low' : '');
-            }
-            wrap.classList.add('visible');
-        }
-
-        function setMainCookie() { generateManifest(); showToast("Applied."); }
-
-        function overrideMainCookie() {
-            if (!document.getElementById('manualCookie').value.trim()) return showToast("Enter a token.");
-            document.getElementById('mainCookieStatus').className = 'status-indicator status-override';
-            document.getElementById('setCookieBtn').disabled = false;
-            generateManifest(); showToast("Forced.");
-        }
-
-        function addMultiCookie() {
-            const val = document.getElementById('multiCookieInput').value.trim();
-            if(!val) return;
-            if(!nsMultiCookies.some(function(c) { return c.value === val; })) {
-                nsMultiCookies.push({ value: val, isValid: null, flow: null });
-                document.getElementById('multiCookieInput').value = '';
-                renderMultiCookies();
-            }
-        }
-
-        function removeCookie(index) { nsMultiCookies.splice(index, 1); renderMultiCookies(); generateManifest(); }
-
-        async function validateAllCookies() {
-            if(nsMultiCookies.length === 0) return;
-            showToast("Validating...");
-            for(let i=0; i<nsMultiCookies.length; i++) {
-                const res = await validateSingleCookie(nsMultiCookies[i].value);
-                nsMultiCookies[i].isValid = res.valid;
-                if(res.flow) nsMultiCookies[i].flow = res.flow;
-                renderMultiCookies();
-            }
-        }
-
-        function applyMultiCookies() { if(nsMultiCookies.length > 0) { generateManifest(); showToast("Applied."); } }
-
-        function renderMultiCookies() {
-            const list = document.getElementById('multiCookieList');
-            list.innerHTML = '';
-            nsMultiCookies.forEach(function(item, idx) {
-                const idShort = shortHash(item.value);
-                const flow = item.flow || {};
-                const remaining = (typeof flow.traffic_limit_mb === 'number' && typeof flow.traffic_usage_mb === 'number') ? (flow.traffic_limit_mb - flow.traffic_usage_mb) : null;
-                let statusColor = 'var(--border)';
-                if (item.isValid === true) statusColor = 'var(--success)';
-                if (item.isValid === false) statusColor = 'var(--danger)';
-                
-                const quotaText = remaining !== null ? '⚡ ' + formatMB(remaining) : 'Unknown';
-                
-                list.innerHTML += '<div class="cookie-card">' +
-                    '<div class="cookie-info">' +
-                        '<div class="cookie-title">' +
-                            '<div style="width:6px; height:6px; border-radius:50%; background:' + statusColor + ';"></div>' +
-                            'Token ' + (idx + 1) + ' <span class="cookie-hash">#' + idShort + '</span>' +
-                        '</div>' +
-                        '<div class="cookie-hash" style="margin-top:2px;">' + quotaText + '</div>' +
-                    '</div>' +
-                    '<button class="btn-sm-danger" onclick="removeCookie(' + idx + ')">Remove</button>' +
-                '</div>';
-            });
-        }
-
-        function generateManifest() {
-            const cookie = document.getElementById('manualCookie').value.trim();
-            const mainCookieStatus = document.getElementById('mainCookieStatus').className;
-            let cookiesArr = [];
-            let showboxHasQuota = false;
-
-            if (cookie && (mainCookieStatus.includes('valid') || mainCookieStatus.includes('override'))) {
-                cookiesArr.push(cookie);
-                if (mainCookieFlow && typeof mainCookieFlow.traffic_limit_mb === 'number' && typeof mainCookieFlow.traffic_usage_mb === 'number') {
-                    if ((mainCookieFlow.traffic_limit_mb - mainCookieFlow.traffic_usage_mb) > 0) showboxHasQuota = true;
-                } else showboxHasQuota = true; 
-            }
-
-            nsMultiCookies.forEach(function(c) {
-                cookiesArr.push(c.value);
-                if (c.flow && typeof c.flow.traffic_limit_mb === 'number' && typeof c.flow.traffic_usage_mb === 'number') {
-                    if ((c.flow.traffic_limit_mb - c.flow.traffic_usage_mb) > 0) showboxHasQuota = true;
-                } else if (c.isValid) showboxHasQuota = true;
-            });
-
-            const config = {
-                enableShowbox: true,
-                showboxCookies: cookiesArr,
-                showboxRegion: document.getElementById('sbRegion').value,
-                sbMinQuality: document.getElementById('sbMinQuality').value,
-                useProxy: document.getElementById('useProxy').checked,
-                customProxyUrl: document.getElementById('proxyType').value === 'custom' ? document.getElementById('customProxyUrl').value.trim() : "",
-                showboxHasQuota: showboxHasQuota
-            };
-
-            const b64 = btoa(JSON.stringify(config)).replace(/\\+/g, '-').replace(/\\//g, '_').replace(/=+$/, '');
-            let manifest = window.location.origin + '/' + b64 + '/manifest.json';
-            
-            if (cookiesArr.length === 0 && config.showboxRegion === 'Auto' && config.sbMinQuality === 'all' && !config.useProxy) {
-                manifest = window.location.origin + '/manifest.json';
-            }
-
-            document.getElementById('manifestUrl').innerText = manifest;
-            document.getElementById('installBtn').href = manifest.replace(/^https?:\\/\\//, 'stremio://');
-        }
-
-        function copyManifest() {
-            navigator.clipboard.writeText(document.getElementById('manifestUrl').innerText);
-            showToast("Copied");
-        }
-
-        document.querySelectorAll('.auto-update').forEach(function(el) { el.addEventListener('input', generateManifest) });
-        generateManifest();
-    </script>
+function shortHash(str) {
+  let h = 5381;
+  for (let i = 0; i < str.length; i++) { h = ((h << 5) + h) + str.charCodeAt(i); h |= 0; }
+  return (h >>> 0).toString(16).padStart(8, '0');
+}
+function showToast(message) {
+  const toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.classList.add('show');
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(() => toast.classList.remove('show'), 2800);
+}
+function toggleCookieVisibility() {
+  const input = document.getElementById('manualCookie');
+  const button = event.currentTarget;
+  input.type = input.type === 'password' ? 'text' : 'password';
+  button.textContent = input.type === 'password' ? 'Show' : 'Hide';
+}
+function toggleProxyOptions() {
+  const wrap = document.getElementById('proxyOptions');
+  document.getElementById('useProxy').checked ? wrap.classList.add('open') : wrap.classList.remove('open');
+  generateManifest();
+}
+function toggleCustomProxy() {
+  const wrap = document.getElementById('customProxyWrap');
+  document.getElementById('proxyType').value === 'custom' ? wrap.classList.add('open') : wrap.classList.remove('open');
+  generateManifest();
+}
+function openGuide() { document.getElementById('guideModal').classList.add('active'); }
+function closeGuide(e) {
+  if (!e || e.target.id === 'guideModal' || e.target.closest?.('button')) document.getElementById('guideModal').classList.remove('active');
+}
+function formatMB(value) {
+  if (typeof value !== 'number' || Number.isNaN(value)) return 'N/A';
+  const safe = Math.max(0, value);
+  return safe >= 1024 ? (safe / 1024).toFixed(2) + ' GB' : safe.toFixed(2) + ' MB';
+}
+function resetCookieState() {
+  document.getElementById('mainCookieStatus').className = 'dot';
+  document.getElementById('setCookieBtn').disabled = true;
+  mainCookieFlow = null;
+  document.getElementById('mainCookieQuota').classList.remove('visible');
+  document.getElementById('cookieStatusNote').textContent = 'Cookie changed. Validate it before applying.';
+  generateManifest();
+}
+async function validateSingleCookie(cookieVal) {
+  try {
+    let response = await fetch('/api/febbox-flow', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cookie: cookieVal }) });
+    let result = await response.json();
+    if (result?.ok && result.flow) return { valid: true, flow: result.flow };
+    response = await fetch('/api/validate-cookie', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cookie: cookieVal }) });
+    result = await response.json();
+    return result?.isValid ? { valid: true, flow: null } : { valid: false };
+  } catch { return { valid: false }; }
+}
+async function validateMainCookie() {
+  const value = document.getElementById('manualCookie').value.trim();
+  if (!value) return showToast('Enter a FebBox cookie first.');
+  const dot = document.getElementById('mainCookieStatus');
+  dot.className = 'dot status-pending';
+  document.getElementById('setCookieBtn').disabled = true;
+  document.getElementById('mainCookieQuota').classList.remove('visible');
+  document.getElementById('cookieStatusNote').textContent = 'Checking FebBox…';
+  const result = await validateSingleCookie(value);
+  if (result.valid) {
+    dot.className = 'dot status-valid';
+    document.getElementById('setCookieBtn').disabled = false;
+    mainCookieFlow = result.flow;
+    if (result.flow) showQuota(result.flow);
+    document.getElementById('cookieStatusNote').textContent = 'Cookie validated. Apply it to include it in your manifest.';
+    showToast('FebBox cookie validated.');
+  } else {
+    dot.className = 'dot status-invalid';
+    document.getElementById('cookieStatusNote').textContent = 'Validation failed. Confirm the cookie is current and try again.';
+    showToast('Cookie validation failed.');
+  }
+}
+function showQuota(flow) {
+  if (!flow || typeof flow.traffic_limit_mb !== 'number' || typeof flow.traffic_usage_mb !== 'number') return;
+  const limit = flow.traffic_limit_mb;
+  const remaining = Math.max(0, limit - flow.traffic_usage_mb);
+  const percent = limit > 0 ? Math.round(remaining / limit * 100) : 100;
+  document.getElementById('quotaLabel').textContent = limit > 0 ? formatMB(remaining) + ' remaining of ' + formatMB(limit) : 'No traffic limit reported';
+  document.getElementById('quotaPct').textContent = limit > 0 ? percent + '% left' : 'Unlimited';
+  const fill = document.getElementById('quotaFill');
+  fill.style.width = percent + '%';
+  fill.className = 'barfill' + (percent <= 10 ? ' empty' : percent <= 30 ? ' low' : '');
+  document.getElementById('mainCookieQuota').classList.add('visible');
+}
+function setMainCookie() {
+  if (!document.getElementById('manualCookie').value.trim()) return showToast('Enter a cookie first.');
+  generateManifest();
+  showToast('Primary cookie applied to manifest.');
+}
+function overrideMainCookie() {
+  if (!document.getElementById('manualCookie').value.trim()) return showToast('Enter a cookie first.');
+  document.getElementById('mainCookieStatus').className = 'dot status-valid';
+  document.getElementById('setCookieBtn').disabled = false;
+  document.getElementById('cookieStatusNote').textContent = 'Force applied without validation. If it is invalid, streams may not load.';
+  generateManifest();
+  showToast('Cookie force-applied.');
+}
+function addMultiCookie() {
+  const input = document.getElementById('multiCookieInput');
+  const value = input.value.trim();
+  if (!value) return showToast('Enter a fallback cookie first.');
+  if (!nsMultiCookies.some(item => item.value === value)) nsMultiCookies.push({ value, isValid: null, flow: null });
+  input.value = '';
+  renderMultiCookies();
+  generateManifest();
+}
+function removeCookie(index) { nsMultiCookies.splice(index, 1); renderMultiCookies(); generateManifest(); }
+async function validateAllCookies() {
+  if (!nsMultiCookies.length) return showToast('Add a fallback account first.');
+  showToast('Validating fallback cookies…');
+  for (let i = 0; i < nsMultiCookies.length; i++) {
+    const result = await validateSingleCookie(nsMultiCookies[i].value);
+    nsMultiCookies[i].isValid = result.valid;
+    nsMultiCookies[i].flow = result.flow || null;
+    renderMultiCookies();
+  }
+  showToast('Fallback validation finished.');
+}
+function applyMultiCookies() {
+  if (!nsMultiCookies.length) return showToast('Add a fallback account first.');
+  generateManifest();
+  showToast('Fallback list applied to manifest.');
+}
+function renderMultiCookies() {
+  const list = document.getElementById('multiCookieList');
+  list.replaceChildren();
+  nsMultiCookies.forEach((item, index) => {
+    const card = document.createElement('div');
+    card.className = 'cookie-card';
+    const info = document.createElement('div');
+    const title = document.createElement('div');
+    title.className = 'cookie-title';
+    const dot = document.createElement('span');
+    dot.className = 'cookie-status';
+    if (item.isValid === true) dot.style.background = 'var(--good)';
+    if (item.isValid === false) dot.style.background = 'var(--bad)';
+    const label = document.createElement('span');
+    label.textContent = 'Fallback account ' + (index + 1);
+    const hash = document.createElement('span');
+    hash.className = 'cookie-hash';
+    hash.textContent = '#' + shortHash(item.value);
+    title.append(dot, label, hash);
+    const sub = document.createElement('div');
+    sub.className = 'cookie-sub';
+    const flow = item.flow;
+    if (flow && typeof flow.traffic_limit_mb === 'number' && typeof flow.traffic_usage_mb === 'number') {
+      sub.textContent = formatMB(Math.max(0, flow.traffic_limit_mb - flow.traffic_usage_mb)) + ' remaining';
+    } else sub.textContent = item.isValid === true ? 'Validated' : item.isValid === false ? 'Validation failed' : 'Not validated';
+    info.append(title, sub);
+    const remove = document.createElement('button');
+    remove.className = 'btn btn-danger';
+    remove.type = 'button';
+    remove.textContent = 'Remove';
+    remove.onclick = () => removeCookie(index);
+    card.append(info, remove);
+    list.append(card);
+  });
+}
+function generateManifest() {
+  const cookie = document.getElementById('manualCookie').value.trim();
+  const status = document.getElementById('mainCookieStatus').className;
+  const cookies = [];
+  let hasQuota = false;
+  if (cookie && (status.includes('status-valid') || status.includes('status-override') || document.getElementById('cookieStatusNote').textContent.includes('Force applied'))) {
+    cookies.push(cookie);
+    if (mainCookieFlow && typeof mainCookieFlow.traffic_limit_mb === 'number' && typeof mainCookieFlow.traffic_usage_mb === 'number') {
+      if (mainCookieFlow.traffic_limit_mb - mainCookieFlow.traffic_usage_mb > 0) hasQuota = true;
+    } else hasQuota = true;
+  }
+  nsMultiCookies.forEach(item => {
+    cookies.push(item.value);
+    const flow = item.flow;
+    if (flow && typeof flow.traffic_limit_mb === 'number' && typeof flow.traffic_usage_mb === 'number') {
+      if (flow.traffic_limit_mb - flow.traffic_usage_mb > 0) hasQuota = true;
+    } else if (item.isValid) hasQuota = true;
+  });
+  const config = {
+    enableShowbox: true,
+    showboxCookies: cookies,
+    showboxRegion: document.getElementById('sbRegion').value,
+    sbMinQuality: document.getElementById('sbMinQuality').value,
+    useProxy: document.getElementById('useProxy').checked,
+    customProxyUrl: document.getElementById('proxyType').value === 'custom' ? document.getElementById('customProxyUrl').value.trim() : '',
+    showboxHasQuota: hasQuota
+  };
+  const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(config)))).replace(/\\+/g, '-').replace(/\\//g, '_').replace(/=+$/, '');
+  let manifest = location.origin + '/' + encoded + '/manifest.json';
+  if (!cookies.length && config.showboxRegion === 'Auto' && config.sbMinQuality === 'all' && !config.useProxy) manifest = location.origin + '/manifest.json';
+  document.getElementById('manifestUrl').textContent = manifest;
+  document.getElementById('installBtn').href = manifest.replace(/^https?:\\/\\//, 'stremio://');
+}
+async function copyManifest() {
+  const value = document.getElementById('manifestUrl').textContent;
+  try {
+    await navigator.clipboard.writeText(value);
+    showToast('Manifest URL copied.');
+  } catch {
+    const area = document.createElement('textarea');
+    area.value = value; document.body.append(area); area.select();
+    const ok = document.execCommand('copy'); area.remove();
+    showToast(ok ? 'Manifest URL copied.' : 'Copy failed. Select the URL and copy it manually.');
+  }
+}
+document.querySelectorAll('.auto-update').forEach(element => {
+  element.addEventListener('input', generateManifest);
+  element.addEventListener('change', generateManifest);
+});
+generateManifest();
+</script>
 </body>
 </html>`;
